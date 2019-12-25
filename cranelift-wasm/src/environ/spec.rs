@@ -220,6 +220,19 @@ pub trait FuncEnvironment {
         call_args: &[ir::Value],
     ) -> WasmResult<ir::Inst>;
 
+    /// validate a `call_indirect` WebAssembly instruction at `pos`.
+    ///
+    fn validate_call_indirect(
+        &mut self,
+        pos: FuncCursor,
+        table_index: TableIndex,
+        table: ir::Table,
+        sig_index: SignatureIndex,
+        sig_ref: ir::SigRef,
+        callee: ir::Value,
+        call_args: &[ir::Value],
+    ) -> WasmResult<ir::Value>;
+
     /// Translate a `call` WebAssembly instruction at `pos`.
     ///
     /// Insert instructions at `pos` for a direct call to the function `callee_index`.
