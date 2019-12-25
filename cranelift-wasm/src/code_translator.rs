@@ -459,6 +459,20 @@ pub fn translate_operator<FE: FuncEnvironment + ?Sized>(
             let (sigref, num_args) = state.get_indirect_sig(builder.func, *index, environ)?;
             let table = state.get_table(builder.func, *table_index, environ)?;
             let callee = state.pop1();
+            let validation_result = environ.validate_call_indirect(
+                builder.cursor(),
+                TableIndex::from_u32(*table_index),
+                table,
+                SignatureIndex::from_u32(*index),
+                sigref,
+                callee,
+                state.peekn(num_args),
+            )?;
+            let if_invalid = builder.create_ebb();
+            builder.cursor().ins().brz(validation_result, if_invalid, &[]);
+            builder.switch_to_block(if_invalid);
+            builder.seal_block(if_invalid);
+            builder.ensure_inserted_ebb();
             let call = environ.translate_call_indirect(
                 builder.cursor(),
                 TableIndex::from_u32(*table_index),

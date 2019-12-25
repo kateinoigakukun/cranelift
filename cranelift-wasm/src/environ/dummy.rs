@@ -335,6 +335,20 @@ impl<'dummy_environment> FuncEnvironment for DummyFuncEnvironment<'dummy_environ
             .0)
     }
 
+    fn validate_call_indirect(
+        &mut self,
+        mut pos: FuncCursor<'_>,
+        _table_index: TableIndex,
+        _table: ir::Table,
+        _sig_index: SignatureIndex,
+        _sig_ref: ir::SigRef,
+        _callee: ir::Value,
+        _call_args: &[ir::Value],
+    ) -> WasmResult<ir::Value> {
+        let value = pos.ins().iconst(I32, 1);
+        return Ok(value);
+    }
+
     fn translate_call(
         &mut self,
         mut pos: FuncCursor,
